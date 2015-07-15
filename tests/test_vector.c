@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
-#include "../vector.h"
+#include "vector.h"
 
 #define GUARD(expr) assert(!(expr))
 

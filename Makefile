@@ -1,7 +1,7 @@
 BIN = interpreter compiler jit
 all: $(BIN)
 
-CFLAGS = -Wall -std=c99
+CFLAGS = -Wall -Werror -std=c99 -I.
 
 interpreter: interpreter.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
