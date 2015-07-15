@@ -44,11 +44,6 @@ void compile(const char * const file_contents)
 			break;
 		case '[':
 			if (stack_push(&stack, num_brackets) == 0) {
-#if 0
-				puts  ("    cmpb $0, (%r12)");
-				printf("    je bracket_%d_end\n", num_brackets);
-				printf("bracket_%d_start:\n", num_brackets++);
-#endif
 				printf("_in_%d:\n", num_brackets);
 				puts  ("    LDRB R5, [R4]");
 				puts  ("    CMP R5, #0");
@@ -60,11 +55,6 @@ void compile(const char * const file_contents)
 			break;
 		case ']':
 			if (stack_pop(&stack, &matching_bracket) == 0) {
-#if 0
-				puts("    cmpb $0, (%r12)");
-				printf("    jne bracket_%d_start\n", matching_bracket);
-				printf("bracket_%d_end:\n", matching_bracket);
-#endif
 				printf("_out_%d:\n", matching_bracket);
 				puts  ("    LDRB R5, [R4]");
 				puts  ("    CMP R5, #0");

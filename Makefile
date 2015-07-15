@@ -1,6 +1,7 @@
 BIN = interpreter compiler-x64 compiler-arm jit
 
 CROSS_COMPILE = arm-linux-gnueabihf-
+QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
 
 all: $(BIN)
 
@@ -18,8 +19,10 @@ compiler-arm: compiler-arm.c util.c stack.c
 hello: compiler-x64 compiler-arm
 	./compiler-x64 progs/hello.b > hello.s
 	$(CC) -o hello-x64 hello.s
+	@echo 'x64: ' `./hello-x64`
 	./compiler-arm progs/hello.b > hello.s
 	$(CROSS_COMPILE)gcc -o hello-arm hello.s
+	@echo 'arm: ' `$(QEMU_ARM) hello-arm`
 
 jit: jit.c util.c vector.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
