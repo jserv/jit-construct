@@ -15,6 +15,7 @@ int vector_destroy(struct vector *vec)
 {
 	if (vec == NULL || vec->data == NULL)
 		return -1;
+
 	vec->size = 0;
 	vec->capacity = 0;
 	free(vec->data);
