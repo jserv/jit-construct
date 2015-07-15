@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "file_io.h"
+#include "util.h"
 #include "stack.h"
 
-void compile(const char *const file_contents)
+void compile(const char * const file_contents)
 {
 	int num_brackets = 0;
 	int matching_bracket = 0;
 	struct stack stack = { .size = 0, .items = { 0 } };
-	const char *const prologue =
+	const char * const prologue =
 	    ".text\n"
 	    ".global main\n"
 	    "main:\n"
@@ -49,7 +49,7 @@ void compile(const char *const file_contents)
 			break;
 		case '[':
 			if (stack_push(&stack, num_brackets) == 0) {
-				puts("    cmpb $0, (%r12)");
+				puts  ("    cmpb $0, (%r12)");
 				printf("    je bracket_%d_end\n", num_brackets);
 				printf("bracket_%d_start:\n", num_brackets++);
 			} else {

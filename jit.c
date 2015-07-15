@@ -6,7 +6,7 @@
 #include <sys/mman.h>
 #include "vector.h"
 #include "stack.h"
-#include "file_io.h"
+#include "util.h"
 
 #define GUARD(expr) assert(!(expr))
 

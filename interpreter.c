@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "file_io.h"
+#include "util.h"
 
 void interpret(const char *const input)
 {
@@ -50,11 +50,10 @@ void interpret(const char *const input)
 				int loop = 1;
 				while (loop > 0) {
 					current_char = input[--i];
-					if (current_char == '[') {
+					if (current_char == '[')
 						--loop;
-					} else if (current_char == ']') {
+					else if (current_char == ']')
 						++loop;
-					}
 				}
 			}
 			break;
@@ -62,7 +61,7 @@ void interpret(const char *const input)
 	}
 }
 
-int main(int argc, char* argv [])
+int main(int argc, char *argv[])
 {
 	if (argc != 2) err("Usage: interpret inputfile");
 	char *file_contents = read_file(argv[1]);
