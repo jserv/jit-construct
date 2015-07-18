@@ -5,13 +5,13 @@
 
 #define GUARD(expr) assert(!(expr))
 
-void err(const char* const msg)
+void err(const char * const msg)
 {
 	fprintf(stderr, "%s\n", msg);
 	exit(1);
 }
 
-char *read_file(const char *const filename)
+char *read_file(const char * const filename)
 {
 	if (filename == NULL)
 		return NULL;

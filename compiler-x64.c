@@ -3,7 +3,7 @@
 #include "util.h"
 #include "stack.h"
 
-void compile(const char * const file_contents)
+void compile(const char * const text_body)
 {
 	int num_brackets = 0;
 	int matching_bracket = 0;
@@ -23,8 +23,8 @@ void compile(const char * const file_contents)
 	    "    movq %rsp, %r12";
 	puts(prologue);
 
-	for (unsigned long i = 0; file_contents[i] != '\0'; ++i) {
-		switch (file_contents[i]) {
+	for (unsigned long i = 0; text_body[i] != '\0'; ++i) {
+		switch (text_body[i]) {
 		case '>':
 			puts("    inc %r12");
 			break;
@@ -78,8 +78,8 @@ void compile(const char * const file_contents)
 int main(int argc, char *argv[])
 {
 	if (argc != 2) err("Usage: compile inputfile");
-	char *file_contents = read_file(argv[1]);
-	if (file_contents == NULL) err("Unable to read file");
-	compile(file_contents);
-	free(file_contents);
+	char *text_body = read_file(argv[1]);
+	if (text_body == NULL) err("Unable to read file");
+	compile(text_body);
+	free(text_body);
 }

@@ -1,0 +1,10 @@
+URL: http://luajit.org/git/luajit-2.0.git
+Version: 1c968d5b631e3bece678dcdce4c14afb9d79d409
+License: MIT
+License File: LICENSE
+Description:
+Taken from the larger LuaJIT project, DynASM is a tiny preprocessor and
+runtime for generating machine code at runtime.
+
+Local Modifications:
+No modifications.
