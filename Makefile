@@ -1,13 +1,15 @@
-BIN = interpreter compiler-x64 compiler-arm \
-      jit0-x64 jit-x64 jit0-arm \
-      compiler-x86
+BIN = interpreter \
+      compiler-x86 compiler-x64 compiler-arm \
+      jit0-x64 jit0-arm \
+      jit-x64 jit_arm
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
 
 all: $(BIN)
 
-CFLAGS = -Wall -Werror -std=gnu99 -I.
+#CFLAGS = -Wall -Werror -std=gnu99 -I.
+CFLAGS = -Werror -std=gnu99 -I.
 
 interpreter: interpreter.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
@@ -47,6 +49,14 @@ run-jit-x64: jit-x64
 jit0-arm: jit0-arm.c
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^
 
+jit_arm: dynasm-driver.c jit_arm.h util.c
+	$(CROSS_COMPILE)gcc $(CFLAGS) $(CPPFLAGS) -o $@ \
+		-DJIT=\"jit_arm.h\" dynasm-driver.c util.c
+jit_arm.h: jit_arm.dasc
+	lua dynasm/dynasm.lua -o $@ jit_arm.dasc
+run-jit-arm: jit_arm
+	$(QEMU_ARM) jit_arm progs/hello.b && \
+	$(CROSS_COMPILE)objdump -D -b binary -marm /tmp/jitcode
 
 test: test_vector test_stack
 	./test_vector && ./test_stack
@@ -60,4 +70,4 @@ clean:
 	$(RM) $(BIN) \
 	      hello-x86 hello-x64 hello-arm hello.s \
 	      test_vector test_stack \
-	      jit-x64.h
+	      jit-x64.h jit_arm.h

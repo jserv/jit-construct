@@ -5,7 +5,14 @@
 #include <sys/mman.h>
 
 #include "dynasm/dasm_proto.h"
+
+#if defined(__x86_64__) || defined(__i386)
 #include "dynasm/dasm_x86.h"
+#elif defined(__arm__)
+#include "dynasm/dasm_arm.h"
+#else
+#error "The architecture is not supported"
+#endif
 
 void initjit(dasm_State **state, const void *actionlist);
 void *jitcode(dasm_State **state);
@@ -45,8 +52,10 @@ void *jitcode(dasm_State **state) {
 
 #ifndef NDEBUG
   // Write generated machine code to a temporary file.
-  // View with:
+  // View with: (x86-64)
   //  objdump -D -b binary -mi386 -Mx86-64 /tmp/jitcode
+  // Or: (arm)
+  //  arm-linux-gnueabihf-objdump -D -b binary -marm /tmp/jitcode
   FILE *f = fopen("/tmp/jitcode", "wb");
   fwrite(ret, size, 1, f);
   fclose(f);

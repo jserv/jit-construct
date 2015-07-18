@@ -25,7 +25,7 @@
 #define MAX_NESTING 256
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) err("Usage: jit-x64 <inputfile>");
+  if (argc < 2) err("Usage: jit <inputfile>");
   dasm_State *state;
   initjit(&state, actions);
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   // Function prologue.
   |  push PTR
-  |  mov  PTR, rdi      // rdi store 1st argument
+  |  mov  PTR, rdi  // 1st argument 
 
   for (char *p = read_file(argv[1]); *p; p++) {
     switch (*p) {
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         // Each loop gets two pclabels: at the beginning and end.
         // We store pclabel offsets in a stack to link the loop
         // begin and end together.
-        maxpc += 2;
+        maxpc += 2;     // add two labels
         *top++ = maxpc;
         dasm_growpc(&state, maxpc);
         |  cmp  byte [PTR], 0

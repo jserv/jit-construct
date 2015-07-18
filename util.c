@@ -27,6 +27,7 @@ char *read_file(const char * const filename)
 	char *code = malloc(code_size);
 	if (code == NULL)
 		return NULL;
+
 	fread(code, 1, file_size, fp);
 	GUARD(fclose(fp));
 	return code;
