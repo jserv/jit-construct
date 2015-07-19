@@ -1,0 +1,236 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define DASM_CHECKS 1
+#include "dynasm/dasm_proto.h"
+#include "dynasm/dasm_a64.h"
+
+#define TAPE_SIZE   30000
+#define MAX_NESTING 100
+
+typedef unsigned char uchar;
+
+struct bf_state;
+
+typedef uchar (*get_ch_func)(struct bf_state *);
+typedef void (*put_ch_func)(struct bf_state *, uchar);
+
+typedef struct bf_state {
+    uchar *tape;
+    get_ch_func get_ch;
+    put_ch_func put_ch;
+} bf_state_t;
+
+typedef void (*bfprogram)(bf_state_t *state);
+
+#define bad_program(s) \
+    exit(fprintf(stderr, "bad program near %.16s: %s\n", program, s))
+
+#include <sys/mman.h>
+static void *link_and_encode(dasm_State **d) {
+    size_t sz;
+    void *buf;
+    dasm_link(d, &sz);
+    buf = mmap(0, sz, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    dasm_encode(d, buf);
+    mprotect(buf, sz, PROT_READ|PROT_EXEC);
+    return buf;
+}
+
+static bfprogram bf_compile(const char* program) {
+    unsigned int loops[MAX_NESTING];
+    int nloops = 0;
+    int n;
+
+    dasm_State *d;
+    unsigned int npc = 8;
+    unsigned int nextpc = 0;
+
+    |.arch a64
+    |.section code
+
+    dasm_init(&d, DASM_MAXSECTION);
+
+    |.globals bf_
+    void *labels[bf__MAX];
+    dasm_setupglobal(&d, labels, bf__MAX);
+
+    |.actionlist bf_actions
+    dasm_setup(&d, bf_actions);
+
+    dasm_growpc(&d, npc);
+
+    |.define aPtr, x19
+    |.define aState, x20
+    |.define aTapeBegin, x21
+    |.define aTapeEnd, x22
+    |.define TMP, x23
+    |.define TMP1, x24
+    |.define TMPw, w23
+    |.define TMP1w, w24
+    |.define cArg1w, w0
+    |.define cArg2w, w1
+    |.define cRetw, w0
+    |.define cArg1, x0
+    |.define cArg2, x1
+    |.define cRet, x0
+    |.macro prologue
+        | sub sp, sp, #0x40
+        | stp aPtr, aState, [sp]
+        | stp aTapeBegin, aTapeEnd, [sp, #0x10]
+        | stp TMP, TMP1, [sp, #0x20]
+        | str lr, [sp, #0x30]
+        | mov aState, cArg1
+    |.endmacro
+    |.macro epilogue
+        | ldp aPtr, aState, [sp]
+        | ldp aTapeBegin, aTapeEnd, [sp, #0x10]
+        | ldp TMP, TMP1, [sp, #0x20]
+        | ldr lr, [sp, #0x30]
+        | add sp, sp, #0x40
+        | ret
+    |.endmacro
+
+    const char* p = program;
+
+    |.type bfstate, bf_state_t, aState
+
+    dasm_State **Dst = &d;
+    |.code
+    |->main:
+    | prologue
+    | ldr aPtr, bfstate->tape
+    | mov aTapeBegin, aPtr
+    | mov TMP, #TAPE_SIZE - 1
+    | add aTapeEnd, aPtr, TMP
+    while (1) {
+        switch (*p++) {
+        case '>':
+            for (n=1; *p == '>'; n++, p++);
+            | mov TMP, #(n%TAPE_SIZE)
+            | add aPtr, aPtr, TMP
+            | cmp aPtr, aTapeEnd
+            | b.ls >1
+            | mov TMP, #TAPE_SIZE
+            | sub aPtr, aPtr, TMP
+            |1:
+            break;
+        case '<':
+            for (n=1; *p == '<'; n++, p++);
+            | mov TMP, #(n%TAPE_SIZE)
+            | sub aPtr, aPtr, TMP
+            | cmp aPtr, aTapeBegin
+            | b.hs >1
+            | mov TMP, #TAPE_SIZE
+            | add aPtr, aPtr, TMP
+            |1:
+            break;
+        case '+':
+            for (n=1; *p == '+'; n++, p++);
+            | ldrb TMPw, [aPtr]
+            | mov TMP1w, #n
+            | add TMPw, TMPw, TMP1w
+            | strb TMPw, [aPtr]
+            break;
+        case '-':
+            for (n=1; *p == '-'; n++, p++);
+            | ldrb TMPw, [aPtr]
+            | mov TMP1w, #n
+            | sub TMPw, TMPw, TMP1w
+            | strb TMPw, [aPtr]
+            break;
+        case ',':
+            | mov cArg1, aState
+            | ldr TMP, bfstate->get_ch
+            | blr TMP
+            | strb cRetw, [aPtr]
+            break;
+        case '.':
+            | ldrb cArg2w, [aPtr]
+            | mov cArg1, aState
+            | ldr TMP, bfstate->put_ch
+            | blr TMP
+            break;
+        case '[':
+            if (nloops == MAX_NESTING)
+                bad_program("Nesting too deep");
+
+            if (p[0] == '-' && p[1] == ']') {
+                p += 2;
+                | mov TMPw, #0
+                | strb TMPw, [aPtr]
+            } else {
+                if (nextpc == npc) {
+                    npc *= 2;
+                    dasm_growpc(&d, npc);
+                }
+                | ldrb TMPw, [aPtr]
+                | cmp TMPw, #0
+                | b.eq =>nextpc + 1
+                |=>nextpc:
+                loops[nloops++] = nextpc;
+                nextpc += 2;
+            }
+            break;
+        case ']':
+            if (nloops <= 0)
+                bad_program("] has no matched [");
+            --nloops;
+            | ldrb TMPw, [aPtr]
+            | cmp TMPw, #0
+            | b.ne =>loops[nloops]
+            |=>loops[nloops]+1:
+            break;
+        case '\0':
+            if (nloops > 0)
+                bad_program("end of file where there's open '['");
+            | epilogue
+            link_and_encode(&d);
+            dasm_free(&d);
+            return (bfprogram)labels[bf_main];
+        // ignore all other instruction.
+        }
+    }
+}
+
+static uchar get_ch(bf_state_t *state) {
+    return (unsigned char)getchar();
+}
+
+static void put_ch(bf_state_t *state, uchar c) {
+    putchar((int)c);
+}
+
+static void bf_run(const char* program) {
+    bf_state_t state;
+    uchar tape[TAPE_SIZE];
+    bfprogram bfp;
+    state.tape = tape;
+    state.get_ch = get_ch;
+    state.put_ch = put_ch;
+    bfp = bf_compile(program);
+    bfp(&state);
+}
+
+int main(int argc, char* argv[]) {
+    long sz;
+    char *program;
+    FILE *fp;
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <inputfile>\n", argv[0]);
+        return 1;
+    }
+
+    fp = fopen(argv[1], "r");
+    if (!fp) {
+        fprintf(stderr, "Can't open file '%s'\n", argv[1]);
+        return 1;
+    }
+    fseek(fp, 0, SEEK_END);
+    sz = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    program = (char*)malloc(sz + 1);
+    program[fread(program, 1, sz, fp)] = 0;
+    fclose(fp);
+    bf_run(program);
+    return 0;
+}
