@@ -3,6 +3,7 @@ BIN = interpreter compiler-x64 compiler-arm \
 
 CROSS_COMPILE = aarch64-linux-gnu-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
+QEMU_A64 = qemu-aarch64 -L /usr/aarch64-linux-gnu
 
 all: $(BIN)
 
@@ -46,8 +47,8 @@ jit-a64.c: jit-a64.dasc
 	lua dynasm/dynasm.lua -o $@ $<
 dump-a64: jit-a64.dasc
 	lua dynasm/dynasm.lua --dumparch a64 $< >dump.a64
-qemu-a64: jit-a64
-	qemu-aarch64 -L /usr/aarch64-linux-gnu $< progs/mandelbrot.b
+run-jit-a64: jit-a64
+	$(QEMU_A64) $< progs/mandelbrot.b
 
 test: test_vector test_stack
 	./test_vector && ./test_stack
