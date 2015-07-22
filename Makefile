@@ -28,10 +28,10 @@ jit0: jit0.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 jit: dynasm-driver.c jit.h util.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o jit -DJIT=\"jit.h\" \
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -DJIT=\"jit.h\" \
 		dynasm-driver.c util.c
 jit.h: jit.dasc
-	        lua dynasm/dynasm.lua jit.dasc > jit.h
+	        lua dynasm/dynasm.lua -o $@ jit.dasc
 
 test: test_vector test_stack
 	./test_vector && ./test_stack
