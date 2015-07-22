@@ -4,6 +4,6 @@ test_vector
 compiler-arm
 compiler-x64
 interpreter
-jit
-jit.h
+jit-x64
+jit-x64.h
 jit0-x64
