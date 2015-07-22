@@ -1,4 +1,5 @@
-BIN = interpreter compiler-x64 compiler-arm jit0 jit
+BIN = interpreter compiler-x64 compiler-arm \
+      jit0-x64 jit
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
@@ -24,7 +25,7 @@ hello: compiler-x64 compiler-arm
 	$(CROSS_COMPILE)gcc -o hello-arm hello.s
 	@echo 'arm: ' `$(QEMU_ARM) hello-arm`
 
-jit0: jit0.c
+jit0-x64: jit0-x64.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 jit: dynasm-driver.c jit.h util.c
@@ -48,4 +49,4 @@ clean:
 	$(RM) $(BIN) \
 	      hello-x64 hello-arm hello.s \
 	      test_vector test_stack \
-	      jit.h
+	      jit0-x64 jit.h

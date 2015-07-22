@@ -6,4 +6,4 @@ compiler-x64
 interpreter
 jit
 jit.h
-jit0
+jit0-x64
