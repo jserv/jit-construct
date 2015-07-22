@@ -47,8 +47,6 @@ void *jitcode(dasm_State **state) {
   // Write generated machine code to a temporary file.
   // View with:
   //  objdump -D -b binary -mi386 -Mx86-64 /tmp/jitcode
-  // Or:
-  //  ndisasm -b 64 /tmp/jitcode
   FILE *f = fopen("/tmp/jitcode", "wb");
   fwrite(ret, size, 1, f);
   fclose(f);

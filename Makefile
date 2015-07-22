@@ -32,6 +32,9 @@ jit: dynasm-driver.c jit.h util.c
 		dynasm-driver.c util.c
 jit.h: jit.dasc
 	        lua dynasm/dynasm.lua -o $@ jit.dasc
+run-jit: jit
+	./jit progs/hello.b && objdump -D -b binary \
+		-mi386 -Mx86-64 /tmp/jitcode
 
 test: test_vector test_stack
 	./test_vector && ./test_stack
