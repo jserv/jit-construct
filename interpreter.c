@@ -63,7 +63,7 @@ void interpret(const char *const input)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2) err("Usage: interpret inputfile");
+	if (argc != 2) err("Usage: interpreter <inputfile>");
 	char *file_contents = read_file(argv[1]);
 	if (file_contents == NULL) err("Couldn't open file");
 	interpret(file_contents);

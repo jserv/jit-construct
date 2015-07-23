@@ -1,5 +1,3 @@
-// only works on x86-64!
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +10,7 @@ int main(int argc, char *argv[]) {
   unsigned char code[] = {0xb8, 0x00, 0x00, 0x00, 0x00, 0xc3};
 
   if (argc < 2) {
-    fprintf(stderr, "Usage: jit1 <integer>\n");
+    fprintf(stderr, "Usage: jit0-x64 <integer>\n");
     return 1;
   }
 

@@ -76,7 +76,7 @@ void compile(const char * const file_contents)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2) err("Usage: compile inputfile");
+	if (argc != 2) err("Usage: compiler-arm <inputfile>");
 	char *file_contents = read_file(argv[1]);
 	if (file_contents == NULL) err("Unable to read file");
 	compile(file_contents);

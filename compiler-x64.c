@@ -77,7 +77,7 @@ void compile(const char * const text_body)
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2) err("Usage: compile inputfile");
+	if (argc != 2) err("Usage: compiler-x64 <inputfile>");
 	char *text_body = read_file(argv[1]);
 	if (text_body == NULL) err("Unable to read file");
 	compile(text_body);
