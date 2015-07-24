@@ -1,5 +1,6 @@
 BIN = interpreter compiler-x64 compiler-arm \
-      jit0-x64 jit-x64 jit0-arm
+      jit0-x64 jit-x64 jit0-arm \
+      compiler-x86
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
@@ -10,6 +11,15 @@ CFLAGS = -Wall -Werror -std=gnu99 -I.
 
 interpreter: interpreter.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
+
+compiler-x86: compiler-x86.c util.c stack.c
+	$(CC) $(CFLAGS) -o $@ $^
+
+hello-x86: compiler-x86
+	./compiler-x86 progs/hello.b > hello-x86.s
+	$(AS) -o hello-x86.o hello-x86.s
+	$(CC) -o hello-x86 hello-x86.o
+	@echo 'x86-only: ' `./hello-x86`
 
 compiler-x64: compiler-x64.c util.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
@@ -53,4 +63,5 @@ clean:
 	$(RM) $(BIN) \
 	      hello-x64 hello-arm hello.s \
 	      test_vector test_stack \
-	      jit-x64.h
+	      jit-x64.h \
+	      hello-x86.s hello-x86.o hello-x86
