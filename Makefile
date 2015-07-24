@@ -1,5 +1,5 @@
 BIN = interpreter compiler-x64 compiler-arm \
-      jit0-x64 jit-x64
+      jit0-x64 jit-x64 jit0-arm
 
 CROSS_COMPILE = arm-linux-gnueabihf-
 QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
@@ -36,6 +36,10 @@ jit-x64.h: jit-x64.dasc
 run-jit-x64: jit-x64
 	./jit-x64 progs/hello.b && objdump -D -b binary \
 		-mi386 -Mx86-64 /tmp/jitcode
+
+jit0-arm: jit0-arm.c
+	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^
+
 
 test: test_vector test_stack
 	./test_vector && ./test_stack

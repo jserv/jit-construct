@@ -7,3 +7,4 @@ interpreter
 jit-x64
 jit-x64.h
 jit0-x64
+jit0-arm
