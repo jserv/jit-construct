@@ -33,6 +33,17 @@ int main(int argc, char *argv[]) {
                    MAP_ANON | MAP_PRIVATE, -1, 0);
   memcpy(mem, code, sizeof(code));
 
+  // Clear caches to prevent self-modifying code execute failed due to I-cache
+  // and D-cache not coherent.
+  //
+  // Please see:
+  // http://community.arm.com/groups/processors/blog/2010/02/17/caches-and-self-modifying-code
+#if defined(__GNUC__)
+  __builtin___clear_cache((char*) mem, (char*) (mem + sizeof(code)));
+#else
+#error "Missing builtin to flush instruction cache."
+#endif
+
   // The function will return the user's value.
   int (*func)() = mem;
   return func();
