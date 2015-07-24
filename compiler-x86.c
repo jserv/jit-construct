@@ -22,8 +22,7 @@ void compile(const char * const text_body)
 	    "    movl %esp, %ecx";
 	puts(prologue);
 
-	for(unsigned long i = 0; text_body[i] != '\0'; ++i)
-	{
+	for (unsigned long i = 0; text_body[i] != '\0'; ++i) {
 		switch (text_body[i]){
 		case '>':
 			puts("    inc %ecx");
@@ -45,17 +44,16 @@ void compile(const char * const text_body)
 			puts("    movb %al, (%ecx)");
 			break;
 		case '[':
-			if(stack_push(&stack, num_brackets)==0){
+			if (stack_push(&stack, num_brackets)==0) {
 				puts  ("    cmpb $0, (%ecx)");
-			
-	printf("    je bracket_%d_end\n", num_brackets);	
-	printf("bracket_%d_start:\n", num_brackets++);
+				printf("    je bracket_%d_end\n", num_brackets);
+				printf("bracket_%d_start:\n", num_brackets++);
 			} else {
 				err("out of stack space");
 			}
 			break;
 		case ']':
-			if(stack_pop(&stack, &matching_brackets)==0){
+			if (stack_pop(&stack, &matching_brackets)==0) {
 				puts  ("cmpb $0, (%ecx)");
 				printf("    jne bracket_%d_start\n", matching_brackets);
 				printf("bracket_%d_end:\n", matching_brackets);
@@ -79,9 +77,9 @@ void compile(const char * const text_body)
 
 int main(int argc, char *argv[])
 {
-	if(argc != 2) err("Usage: compile inputfile");
+	if (argc != 2) err("Usage: compile-x86 inputfile");
 	char *text_body = read_file(argv[1]);
-	if(text_body == NULL) err("unable to read file");
+	if (text_body == NULL) err("unable to read file");
 	compile(text_body);
 	free(text_body);
 }
