@@ -15,19 +15,16 @@ interpreter: interpreter.c util.c
 compiler-x86: compiler-x86.c util.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-hello-x86: compiler-x86
-	./compiler-x86 progs/hello.b > hello-x86.s
-	$(AS) -o hello-x86.o hello-x86.s
-	$(CC) -o hello-x86 hello-x86.o
-	@echo 'x86-only: ' `./hello-x86`
-
 compiler-x64: compiler-x64.c util.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 compiler-arm: compiler-arm.c util.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-hello: compiler-x64 compiler-arm
+hello: compiler-x86 compiler-x64 compiler-arm
+	./compiler-x86 progs/hello.b > hello.s
+	$(CC) -m32 -o hello-x86 hello.s
+	@echo 'x86: ' `./hello-x86`
 	./compiler-x64 progs/hello.b > hello.s
 	$(CC) -o hello-x64 hello.s
 	@echo 'x64: ' `./hello-x64`
@@ -61,7 +58,6 @@ test_stack: tests/test_stack.c stack.c
 
 clean:
 	$(RM) $(BIN) \
-	      hello-x64 hello-arm hello.s \
+	      hello-x86 hello-x64 hello-arm hello.s \
 	      test_vector test_stack \
-	      jit-x64.h \
-	      hello-x86.s hello-x86.o hello-x86
+	      jit-x64.h
