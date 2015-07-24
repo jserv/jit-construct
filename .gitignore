@@ -3,8 +3,13 @@ test_stack
 test_vector
 compiler-arm
 compiler-x64
+compiler-x86
 interpreter
 jit-x64
 jit-x64.h
 jit0-x64
 jit0-arm
+hello-arm
+hello-x64
+hello-x86
+hello.s
