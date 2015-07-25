@@ -32,8 +32,8 @@ _Except_ the code in `progs/` and `dynasm/`, the JIT-Construct source files are 
 under the THE BEER-WARE LICENSE (Revision 42) or BSD-style license found in the
 LICENSE file.
 
-[DynASM](http://luajit.org/dynasm.html) is a dynamic assembler for code generation engines and
-Copyright © 2005-2015 Mike Pall, released under the MIT license.
+[DynASM](http://luajit.org/dynasm.html) is a tiny preprocessor and runtime for generating
+machine code at runtime and copyrighted by Mike Pall, released under the MIT license.
 
 `progs/mandelbrot.b` is a mandelbrot set fractal viewer in brainfuck written by Erik Bosman.
 `progs/sierpinski.b` is written by [NYYRIKKI](http://www.iwriteiam.nl/Ha_vs_bf_inter.html).
