@@ -32,7 +32,7 @@ static unsigned char get_ch() { return (unsigned char) getchar(); }
 static void put_ch(unsigned char c) {  putchar((int) c); }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) err("Usage: jit <inputfile>");
+  if (argc < 2) err("Usage: jit-arm <inputfile>");
   dasm_State *state;
   initjit(&state, actions);
 
