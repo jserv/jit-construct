@@ -13,13 +13,13 @@ CFLAGS = -Werror -std=gnu99 -I.
 interpreter: interpreter.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-x86: compiler-x86.c util.c stack.c
+compiler-x86: compiler-x86.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-x64: compiler-x64.c util.c stack.c
+compiler-x64: compiler-x64.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-arm: compiler-arm.c util.c stack.c
+compiler-arm: compiler-arm.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 hello: compiler-x86 compiler-x64 compiler-arm
@@ -60,7 +60,7 @@ run-jit-arm: jit-arm
 test: test_stack
 	./test_stack
 
-test_stack: tests/test_stack.c stack.c
+test_stack: tests/test_stack.c stack.h
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
