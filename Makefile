@@ -58,16 +58,14 @@ run-jit-arm: jit-arm
 	$(QEMU_ARM) jit-arm progs/hello.b && \
 	$(CROSS_COMPILE)objdump -D -b binary -marm /tmp/jitcode
 
-test: test_vector test_stack
-	./test_vector && ./test_stack
+test: test_stack
+	./test_stack
 
-test_vector: tests/test_vector.c vector.c
-	$(CC) $(CFLAGS) -o $@ $^
 test_stack: tests/test_stack.c stack.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	$(RM) $(BIN) \
 	      hello-x86 hello-x64 hello-arm hello.s \
-	      test_vector test_stack \
+	      test_stack \
 	      jit-x64.h jit-arm.h
