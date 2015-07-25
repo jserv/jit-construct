@@ -57,8 +57,10 @@ run-jit-arm: jit-arm
 	$(QEMU_ARM) jit-arm progs/hello.b && \
 	$(CROSS_COMPILE)objdump -D -b binary -marm /tmp/jitcode
 
-test: test_stack
+test: test_stack jit0-x64 jit0-arm
 	./test_stack
+	(./jit0-x64 42 ; echo $$?)
+	($(QEMU_ARM) jit0-arm 42 ; echo $$?)
 
 test_stack: tests/test_stack.c stack.h
 	$(CC) $(CFLAGS) -o $@ $^
