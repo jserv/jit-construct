@@ -1,6 +1,5 @@
 BIN = interpreter \
       compiler-x86 compiler-x64 compiler-arm \
-      jit0-x64 jit0-arm \
       jit-x64 jit-arm
 
 CROSS_COMPILE = arm-linux-gnueabihf-
@@ -34,7 +33,7 @@ hello: compiler-x86 compiler-x64 compiler-arm
 	$(CROSS_COMPILE)gcc -o hello-arm hello.s
 	@echo 'arm: ' `$(QEMU_ARM) hello-arm`
 
-jit0-x64: jit0-x64.c
+jit0-x64: tests/jit0-x64.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 jit-x64: dynasm-driver.c jit-x64.h util.c
@@ -46,7 +45,7 @@ run-jit-x64: jit-x64
 	./jit-x64 progs/hello.b && objdump -D -b binary \
 		-mi386 -Mx86-64 /tmp/jitcode
 
-jit0-arm: jit0-arm.c
+jit0-arm: tests/jit0-arm.c
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^
 
 jit-arm: dynasm-driver.c jit-arm.h util.c
@@ -67,5 +66,5 @@ test_stack: tests/test_stack.c stack.c
 clean:
 	$(RM) $(BIN) \
 	      hello-x86 hello-x64 hello-arm hello.s \
-	      test_stack \
+	      test_stack jit0-x64 jit0-arm \
 	      jit-x64.h jit-arm.h
