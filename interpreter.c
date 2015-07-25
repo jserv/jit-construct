@@ -6,7 +6,7 @@
 void interpret(const char *const input)
 {
 	// Initialize the tape with 30,000 zeroes.
-	uint8_t tape [30000] = { 0 };
+	uint8_t tape[30000] = { 0 };
 
 	// Set the pointer to point at the left most cell of the tape.
 	uint8_t *ptr = tape;
@@ -37,11 +37,10 @@ void interpret(const char *const input)
 				int loop = 1;
 				while (loop > 0) {
 					current_char = input[++i];
-					if (current_char == ']') {
+					if (current_char == ']')
 						--loop;
-					} else if (current_char == '[') {
+					else if (current_char == '[')
 						++loop;
-					}
 				}
 			}
 			break;
