@@ -54,7 +54,7 @@ jit-arm: dynasm-driver.c jit-arm.h util.c
 		-DJIT=\"jit-arm.h\" dynasm-driver.c util.c
 jit-arm.h: jit-arm.dasc
 	lua dynasm/dynasm.lua -o $@ jit-arm.dasc
-run-jit-arm: jit_arm
+run-jit-arm: jit-arm
 	$(QEMU_ARM) jit-arm progs/hello.b && \
 	$(CROSS_COMPILE)objdump -D -b binary -marm /tmp/jitcode
 
