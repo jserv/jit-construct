@@ -22,17 +22,11 @@ int main(int argc, char *argv[])
 	int pcstack[MAX_NESTING];
 	int *top = pcstack, *limit = pcstack + MAX_NESTING;
 
-	FILE *fp = fopen(argv[1], "r");
-	char *code = malloc(30000);
-	if (code == NULL) 
-		return -1;
-	fread(code, 1, 30000, fp);
-
 	// Function prologue.
 	|  push {PTR, r5, r7, lr}
 	|  mov  PTR, r0
 
-	for (char *p = code; *p; p++) {
+	for (char *p = read_file(argv[1]); *p; p++) {
 		switch (*p) {
 		case '>':
 			|  add  PTR, PTR, #1
@@ -96,7 +90,5 @@ int main(int argc, char *argv[])
 	fptr(mem);
 	free(mem);
 	free_jitcode(fptr);
-	free(code);
-	fclose(fp);
 	return 0;
 }
