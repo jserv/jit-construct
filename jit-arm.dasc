@@ -1,29 +1,13 @@
-/* JIT for Brainf*ck */
-
 #include <stdint.h>
 #include "util.h"
 
 |.arch arm
 |.actionlist actions
-|.actionlist build_actionlist
-|.globals GLOB_
-|.globalnames globnames
-|.externnames extnames
 |
 |// Use r4 as our cell pointer.
 |// Since r4 is a callee-save register, it will be preserved
 |// across our calls to getchar and putchar.
 |.define PTR, r4
-|
-|// Macro for calling a function.
-|// In cases where our target is <=2**32 away we can use
-|//   | call &addr
-|// But since we don't know if it will be, we use this safe
-|// sequence instead.
-|.macro callp, addr
-|//  mov64  rax, (uintptr_t)addr
-|  bl   (uintptr_t)addr
-|.endmacro
 
 #define Dst &state
 #define MAX_NESTING 256
