@@ -12,90 +12,91 @@
 #define Dst &state
 #define MAX_NESTING 256
 
-int main(int argc, char *argv[]) {
-  if (argc < 2) err("Usage: jit-arm <inputfile>");
-  dasm_State *state;
-  initjit(&state, actions);
+int main(int argc, char *argv[])
+{
+	if (argc < 2) err("Usage: jit-arm <inputfile>");
+	dasm_State *state;
+	initjit(&state, actions);
 
-  unsigned int maxpc = 0;
-  int pcstack[MAX_NESTING];
-  int *top = pcstack, *limit = pcstack + MAX_NESTING;
+	unsigned int maxpc = 0;
+	int pcstack[MAX_NESTING];
+	int *top = pcstack, *limit = pcstack + MAX_NESTING;
 
-  FILE *fp = fopen(argv[1], "r");
-  char *code = malloc(30000);
-  if (code == NULL) 
-  	return -1;
-  fread(code, 1, 30000, fp);
+	FILE *fp = fopen(argv[1], "r");
+	char *code = malloc(30000);
+	if (code == NULL) 
+		return -1;
+	fread(code, 1, 30000, fp);
 
-  // Function prologue.
-  |  push {PTR, r5, r7, lr}
-  |  mov  PTR, r0
+	// Function prologue.
+	|  push {PTR, r5, r7, lr}
+	|  mov  PTR, r0
 
-  for (char *p = code; *p; p++) {
-    switch (*p) {
-      case '>':
-        |  add  PTR, PTR, #1
-        break;
-      case '<':
-        |  sub  PTR, PTR, #1
-        break;
-      case '+':
-        |  ldrb  r5, [PTR]
-        |  add   r5, r5, #1
-        |  strb  r5, [PTR]
-        break;
-      case '-':
-        |  ldrb  r5, [PTR]
-        |  sub   r5, r5, #1
-        |  strb  r5, [PTR]
-        break;
-      case '.':
-        |  mov r0, #1   // stdout
-        |  mov r1, PTR
-        |  mov r2, #1
-        |  mov r7, #4   // sys_write
-        |  svc #0
-        break;
-      case ',':
-        |  mov r0, #0   // stdin
-        |  mov r1, PTR
-        |  mov r2, #1
-        |  mov r7, #3   // sys_read
-        |  svc #0
-        break;
-      case '[':
-        if (top == limit) err("Nesting too deep.");
-        // Each loop gets two pclabels: at the beginning and end.
-        // We store pclabel offsets in a stack to link the loop
-        // begin and end together.
-        maxpc += 2;     // add two labels
-        *top++ = maxpc;
-        dasm_growpc(&state, maxpc);
-        |  ldrb  r5, [PTR]
-        |  cmp   r5, #0
-        |  beq   =>(maxpc-2)
-        |=>(maxpc-1):
-        break;
-      case ']':
-        if (top == pcstack) err("Unmatched ']'");
-        top--;
-        |  ldrb  r5, [PTR]
-        |  cmp   r5, #0
-        |  bne   =>(*top-1)
-        |=>(*top-2):
-        break;
-    }
-  }
+	for (char *p = code; *p; p++) {
+		switch (*p) {
+		case '>':
+			|  add  PTR, PTR, #1
+			break;
+		case '<':
+			|  sub  PTR, PTR, #1
+			break;
+		case '+':
+			|  ldrb  r5, [PTR]
+			|  add   r5, r5, #1
+			|  strb  r5, [PTR]
+			break;
+		case '-':
+			|  ldrb  r5, [PTR]
+			|  sub   r5, r5, #1
+			|  strb  r5, [PTR]
+			break;
+		case '.':
+			|  mov r0, #1   // stdout
+			|  mov r1, PTR
+			|  mov r2, #1
+			|  mov r7, #4   // sys_write
+			|  svc #0
+			break;
+		case ',':
+			|  mov r0, #0   // stdin
+			|  mov r1, PTR
+			|  mov r2, #1
+			|  mov r7, #3   // sys_read
+			|  svc #0
+			break;
+		case '[':
+			if (top == limit) err("Nesting too deep.");
+			// Each loop gets two pclabels: at the beginning and end.
+			// We store pclabel offsets in a stack to link the loop
+			// begin and end together.
+			maxpc += 2;     // add two labels
+			*top++ = maxpc;
+			dasm_growpc(&state, maxpc);
+			|  ldrb  r5, [PTR]
+			|  cmp   r5, #0
+			|  beq   =>(maxpc-2)
+			|=>(maxpc-1):
+			break;
+		case ']':
+			if (top == pcstack) err("Unmatched ']'");
+			top--;
+			|  ldrb  r5, [PTR]
+			|  cmp   r5, #0
+			|  bne   =>(*top-1)
+			|=>(*top-2):
+			break;
+		}
+	}
 
-  // Function epilogue.
-  |  pop  {PTR, r5, r7, pc}
+	// Function epilogue.
+	|  pop  {PTR, r5, r7, pc}
 
-  void (*fptr)(char*) = jitcode(&state);
-  char *mem = calloc(30000, 1);
-  fptr(mem);
-  free(mem);
-  free_jitcode(fptr);
-  free(code);
-  fclose(fp);
-  return 0;
+	void (*fptr)(char*) = jitcode(&state);
+	char *mem = calloc(30000, 1);
+	fptr(mem);
+	free(mem);
+	free_jitcode(fptr);
+	free(code);
+	fclose(fp);
+	return 0;
 }
