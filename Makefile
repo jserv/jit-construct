@@ -57,6 +57,12 @@ run-jit-arm: jit-arm
 	$(QEMU_ARM) jit-arm progs/hello.b && \
 	$(CROSS_COMPILE)objdump -D -b binary -marm /tmp/jitcode
 
+bench-jit-x64: jit-x64
+	@echo
+	@echo Executing Brainf*ck benchmark suite. Be patient.
+	@echo
+	@tests/bench.py
+
 test: test_stack jit0-x64 jit0-arm
 	./test_stack
 	(./jit0-x64 42 ; echo $$?)

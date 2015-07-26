@@ -24,6 +24,7 @@ make hello
 ```
 make run-jit-x64
 make run-jit-arm
+make bench-jit-x64
 ```
 
 ##License
