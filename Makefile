@@ -7,8 +7,7 @@ QEMU_ARM = qemu-arm -L /usr/arm-linux-gnueabihf
 
 all: $(BIN)
 
-#CFLAGS = -Wall -Werror -std=gnu99 -I.
-CFLAGS = -Werror -std=gnu99 -I.
+CFLAGS = -Wall -Werror -std=gnu99 -I.
 
 interpreter: interpreter.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
@@ -37,7 +36,7 @@ jit0-x64: tests/jit0-x64.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 jit-x64: dynasm-driver.c jit-x64.h util.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -DJIT=\"jit-x64.h\" \
+	$(CC) $(CFLAGS) -o $@ -DJIT=\"jit-x64.h\" \
 		dynasm-driver.c util.c
 jit-x64.h: jit-x64.dasc
 	        lua dynasm/dynasm.lua -o $@ jit-x64.dasc
@@ -49,8 +48,8 @@ jit0-arm: tests/jit0-arm.c
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^
 
 jit-arm: dynasm-driver.c jit-arm.h util.c
-	$(CROSS_COMPILE)gcc $(CFLAGS) $(CPPFLAGS) -o $@ \
-		-DJIT=\"jit-arm.h\" dynasm-driver.c util.c
+	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -DJIT=\"jit-arm.h\" \
+		dynasm-driver.c util.c
 jit-arm.h: jit-arm.dasc
 	lua dynasm/dynasm.lua -o $@ jit-arm.dasc
 run-jit-arm: jit-arm
