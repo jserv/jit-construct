@@ -10,16 +10,16 @@ all: $(BIN)
 
 CFLAGS = -Wall -Werror -std=gnu99 -I.
 
-interpreter: interpreter.c util.c
+interpreter: interpreter.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-x86: compiler-x86.c util.c
+compiler-x86: compiler-x86.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-x64: compiler-x64.c util.c
+compiler-x64: compiler-x64.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-compiler-arm: compiler-arm.c util.c
+compiler-arm: compiler-arm.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 run-compiler: compiler-x86 compiler-x64 compiler-arm
@@ -39,9 +39,9 @@ run-compiler: compiler-x86 compiler-x64 compiler-arm
 jit0-x64: tests/jit0-x64.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-jit-x64: dynasm-driver.c jit-x64.h util.c
+jit-x64: dynasm-driver.c jit-x64.h
 	$(CC) $(CFLAGS) -o $@ -DJIT=\"jit-x64.h\" \
-		dynasm-driver.c util.c
+		dynasm-driver.c
 jit-x64.h: jit-x64.dasc
 	        $(LUA) dynasm/dynasm.lua -o $@ jit-x64.dasc
 run-jit-x64: jit-x64
@@ -51,9 +51,9 @@ run-jit-x64: jit-x64
 jit0-arm: tests/jit0-arm.c
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^
 
-jit-arm: dynasm-driver.c jit-arm.h util.c
+jit-arm: dynasm-driver.c jit-arm.h
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -DJIT=\"jit-arm.h\" \
-		dynasm-driver.c util.c
+		dynasm-driver.c
 jit-arm.h: jit-arm.dasc
 	$(LUA) dynasm/dynasm.lua -o $@ jit-arm.dasc
 run-jit-arm: jit-arm
