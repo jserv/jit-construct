@@ -37,3 +37,5 @@ machine code at runtime and copyrighted by Mike Pall, released under the MIT lic
 
 `progs/mandelbrot.b` is a mandelbrot set fractal viewer in brainfuck written by Erik Bosman.
 `progs/sierpinski.b` is written by [NYYRIKKI](http://www.iwriteiam.nl/Ha_vs_bf_inter.html).
+`progs/awib.b` is written by [Mats Linander](https://github.com/matslina/awib).
+`progs/hanoi.b` is written by [Clifford Wolf](http://www.clifford.at/bfcpu/hanoi.html).
