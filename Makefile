@@ -22,16 +22,19 @@ compiler-x64: compiler-x64.c util.c
 compiler-arm: compiler-arm.c util.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-hello: compiler-x86 compiler-x64 compiler-arm
+run-compiler: compiler-x86 compiler-x64 compiler-arm
 	./compiler-x86 progs/hello.b > hello.s
 	$(CC) -m32 -o hello-x86 hello.s
 	@echo 'x86: ' `./hello-x86`
+	@echo
 	./compiler-x64 progs/hello.b > hello.s
 	$(CC) -o hello-x64 hello.s
 	@echo 'x64: ' `./hello-x64`
+	@echo
 	./compiler-arm progs/hello.b > hello.s
 	$(CROSS_COMPILE)gcc -o hello-arm hello.s
 	@echo 'arm: ' `$(QEMU_ARM) hello-arm`
+	@echo
 
 jit0-x64: tests/jit0-x64.c
 	$(CC) $(CFLAGS) -o $@ $^

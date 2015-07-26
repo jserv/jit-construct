@@ -17,7 +17,7 @@ make
 
 ###The Compiler
 ```
-make hello
+make run-compiler
 ```
 
 ###The JIT
