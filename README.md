@@ -4,6 +4,15 @@ This repository contains the programs used in Nick Desaulniers' [blog post](http
 ###Portability
 While all three are written in C, only the interpreter should be portable, even to emscripten.  The compiler and JIT is highly dependant on the specific Instruction Set Architecture (ISA), and Linux style calling convention.
 
+##Prerequisites
+Development packages for Ubuntu Linux Ubuntu 14.04 LTS:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install lua5.2 lua-bitop
+sudo apt-get install gcc-arm-linux-gnueabihf
+```
+
 ##Building
 ```
 make
