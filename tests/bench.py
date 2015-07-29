@@ -3,10 +3,11 @@
 import hashlib
 import subprocess
 import sys
+import os
 import time
 
 def get_output(program, stdin):
-    p = subprocess.Popen(['./jit-x64', program] + sys.argv[1:], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    p = subprocess.Popen([os.getenv('BF_RUN','./jit-x64'), program] + sys.argv[1:], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     start = time.time()
     output = p.communicate(input=stdin + '\x00')[0]
     return output, time.time() - start
