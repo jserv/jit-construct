@@ -71,7 +71,7 @@ test: test_stack jit0-x64 jit0-arm
 	(./jit0-x64 42 ; echo $$?)
 	($(QEMU_ARM) jit0-arm 42 ; echo $$?)
 
-test_stack: tests/test_stack.c stack.h
+test_stack: tests/test_stack.c
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:

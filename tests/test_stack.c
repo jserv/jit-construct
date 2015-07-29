@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include "stack.h"
+#include "util.h"
 
 #define GUARD(expr) assert(!(expr))
 
