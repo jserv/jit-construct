@@ -38,3 +38,4 @@ External sources:
 * `progs/sierpinski.b` is written by [NYYRIKKI](http://www.iwriteiam.nl/Ha_vs_bf_inter.html).
 * `progs/awib.b` is written by [Mats Linander](https://github.com/matslina/awib).
 * `progs/hanoi.b` is written by [Clifford Wolf](http://www.clifford.at/bfcpu/hanoi.html).
+* `progs/oobrain.b` is written by [Chris Rathman](http://www.angelfire.com/tx4/cus/shapes/brain.html)
